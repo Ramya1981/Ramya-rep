@@ -1,1 +1,429 @@
-Changed textfile.txt
+import matplotlib.pyplot as plt
+import seaborn as sns
+import warnings
+warnings.filterwarnings("ignore")
+
+
+csv_file_path = "heart_failure_clinical_records_dataset.csv"
+
+# Read the CSV file 
+data_input = pd.read_csv(csv_file_path)
+print('')
+print('')
+print('Raw Dataset size')
+print(data_input.shape)  
+print('')
+print('')
+
+print(' Raw Dataset information')
+print(data_input.info()) 
+print('')
+print('')
+#Data Cleaning and Preprocessing
+
+# 1: Handling Missing Values
+data_miss_value=data_input.isnull().sum()
+print ('Null detection from the dataset')
+print(data_input.isnull().sum())
+print('')
+print('')
+
+data_series_without_zeros = data_miss_value.drop(data_miss_value[data_miss_value == 0].index)
+values_index = data_series_without_zeros.index
+print(' After Null processing')
+#  Removing rows with missing values 
+data_input.dropna(inplace=True)
+print(data_input.isnull().sum())
+
+#  Imputing missing values 
+for tt in range(len(data_series_without_zeros)):
+        
+    mean_value = data_input[(values_index[tt])].mean()
+    data_input[values_index[tt]].fillna(mean_value, inplace=True)
+
+# 2. Handling Duplicates
+
+# Check for  duplication
+data_input.drop_duplicates(inplace=True)
+print (' Size of the raw dataset after duplicate removal.')
+print(data_input.shape)  
+print(data_input.describe())
+# ###############      Class : anaemia
+
+## Seperating label from data
+anaemia_index = data_input.columns.get_loc('anaemia')
+
+data_in_array = list(data_input.values)
+import numpy as np
+data_in_array=np.array(data_in_array)
+result_array_data = np.delete(data_in_array, anaemia_index, axis=1)
+
+X= result_array_data
+y=data_in_array[:,anaemia_index]
+
+from sklearn import datasets
+from sklearn.model_selection import train_test_split
+from sklearn.svm import SVC
+from sklearn.metrics import accuracy_score
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import precision_score
+from sklearn.metrics import recall_score
+from sklearn.metrics import f1_score
+import seaborn as sns
+import matplotlib.pyplot as plt
+class_labels = ["Anemia: No", "Anemia: Yes"]
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+svm_classifier = SVC(kernel='linear')
+svm_classifier.fit(X_train, y_train)
+predictions = svm_classifier.predict(X_test)
+accuracy_svm = accuracy_score(y_test, predictions)
+print('')
+print('')
+print('SVM Performance Anemia')
+print('')
+print('')
+print("Accuracy:", accuracy_svm)
+precision_svm = precision_score(y_test, predictions)
+print("Precision:", precision_svm)
+recall_svm = recall_score(y_test, predictions)
+print("Recall:", recall_svm)
+f1_svm = f1_score(y_test, predictions)
+print("F1 Score:", f1_svm)
+conf_matrix = confusion_matrix(y_test, predictions)
+plt.figure()
+heatmap=sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues', cbar=False,annot_kws={"weight": "bold","size": 14},
+            xticklabels=class_labels, yticklabels=class_labels)
+heatmap.set_xticklabels(heatmap.get_xticklabels(), weight='bold',fontsize=12)
+heatmap.set_yticklabels(heatmap.get_yticklabels(), weight='bold',fontsize=12)
+plt.title('Anemia - SVM- Raw Dataset',fontweight='bold',fontsize=12)
+plt.xlabel('Predicted Labels',fontweight='bold',fontsize=12)
+plt.ylabel('True Labels',fontweight='bold',fontsize=12)
+plt.show()
+
+
+from sklearn.neighbors import KNeighborsClassifier
+
+knn_classifier = KNeighborsClassifier(n_neighbors=3)
+knn_classifier.fit(X_train, y_train)
+
+predictions = knn_classifier.predict(X_test)
+accuracy_knn = accuracy_score(y_test, predictions)
+print('')
+print('')
+print('KNN Performance Anemia')
+print('')
+print('')
+print("Accuracy:", accuracy_knn)
+precision_knn = precision_score(y_test, predictions)
+print("Precision:", precision_knn)
+recall_knn = recall_score(y_test, predictions)
+print("Recall:", recall_knn)
+f1_knn = f1_score(y_test, predictions)
+print("F1 Score:", f1_knn)
+conf_matrix = confusion_matrix(y_test, predictions)
+plt.figure()
+heatmap=sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues', cbar=False,annot_kws={"weight": "bold","size": 14},
+            xticklabels=class_labels, yticklabels=class_labels)
+heatmap.set_xticklabels(heatmap.get_xticklabels(), weight='bold',fontsize=12)
+heatmap.set_yticklabels(heatmap.get_yticklabels(), weight='bold',fontsize=12)
+plt.title('Anemia - KNN- Raw Dataset',fontweight='bold',fontsize=12)
+plt.xlabel('Predicted Labels',fontweight='bold',fontsize=12)
+plt.ylabel('True Labels',fontweight='bold',fontsize=12)
+plt.show()
+
+from sklearn.ensemble import RandomForestClassifier
+rf_classifier = RandomForestClassifier(n_estimators=100, random_state=42)
+rf_classifier.fit(X_train, y_train)
+predictions = rf_classifier.predict(X_test)
+accuracy_rf = accuracy_score(y_test, predictions)
+print('')
+print('')
+print('RF Performance Anemia')
+print('')
+print('')
+print("Accuracy:", accuracy_rf)
+precision_rf = precision_score(y_test, predictions)
+print("Precision:", precision_rf)
+recall_rf = recall_score(y_test, predictions)
+print("Recall:", recall_rf)
+f1_rf = f1_score(y_test, predictions)
+print("F1 Score:", f1_rf)
+conf_matrix = confusion_matrix(y_test, predictions)
+plt.figure()
+heatmap=sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues', cbar=False,annot_kws={"weight": "bold","size": 14},
+            xticklabels=class_labels, yticklabels=class_labels)
+heatmap.set_xticklabels(heatmap.get_xticklabels(), weight='bold',fontsize=12)
+heatmap.set_yticklabels(heatmap.get_yticklabels(), weight='bold',fontsize=12)
+plt.title('Anemia - RF- Raw Dataset',fontweight='bold',fontsize=12)
+plt.xlabel('Predicted Labels',fontweight='bold',fontsize=12)
+plt.ylabel('True Labels',fontweight='bold',fontsize=12)
+plt.show()
+svm_res=[accuracy_svm,precision_svm,recall_svm,f1_svm]
+knn_res=[accuracy_knn,precision_knn,recall_knn,f1_knn]
+rf_res=[accuracy_rf,precision_rf,recall_rf,f1_rf]
+
+x = np.arange(len(['Accuracy' , 'Precision', 'Recall','F1 Score']))
+fig, ax = plt.subplots(figsize=(10, 6))
+
+bar_width = 0.2
+plt.bar(x - 1.5 * bar_width, svm_res, bar_width, label='SVM')
+plt.bar(x - 0.5 * bar_width, knn_res, bar_width, label='KNN')
+plt.bar(x + 0.5 * bar_width, rf_res, bar_width, label='RF')
+
+# Set the labels and title
+plt.xlabel('Methods',fontweight='bold',fontsize=12)
+plt.ylabel('Scores',fontweight='bold',fontsize=12)
+plt.title('Anemia - Raw Dataset',fontweight='bold',fontsize=12)
+plt.xticks(x, ['Accuracy' , 'Precision', 'Recall','F1 Score'],fontweight='bold',fontsize=12)
+plt.legend()
+# Show the plot
+plt.show()
+
+# ###############      Class : High blood pressure
+
+## Seperating label from data
+higbbp_index = data_input.columns.get_loc('high_blood_pressure')
+
+data_in_array = list(data_input.values)
+import numpy as np
+data_in_array=np.array(data_in_array)
+result_array_data = np.delete(data_in_array, higbbp_index, axis=1)
+
+X= result_array_data
+y=data_in_array[:,higbbp_index]
+
+class_labels = ["High BP: No", "High BP: Yes"]
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+svm_classifier = SVC(kernel='linear')
+svm_classifier.fit(X_train, y_train)
+predictions = svm_classifier.predict(X_test)
+accuracy_svm = accuracy_score(y_test, predictions)
+print('')
+print('')
+print('SVM Performance High BP')
+print('')
+print('')
+print("Accuracy:", accuracy_svm)
+precision_svm = precision_score(y_test, predictions)
+print("Precision:", precision_svm)
+recall_svm = recall_score(y_test, predictions)
+print("Recall:", recall_svm)
+f1_svm = f1_score(y_test, predictions)
+print("F1 Score:", f1_svm)
+conf_matrix = confusion_matrix(y_test, predictions)
+plt.figure()
+heatmap=sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues', cbar=False,annot_kws={"weight": "bold","size": 14},
+            xticklabels=class_labels, yticklabels=class_labels)
+heatmap.set_xticklabels(heatmap.get_xticklabels(), weight='bold',fontsize=12)
+heatmap.set_yticklabels(heatmap.get_yticklabels(), weight='bold',fontsize=12)
+plt.title('High BP - SVM- Raw Dataset',fontweight='bold',fontsize=12)
+plt.xlabel('Predicted Labels',fontweight='bold',fontsize=12)
+plt.ylabel('True Labels',fontweight='bold',fontsize=12)
+plt.show()
+
+
+from sklearn.neighbors import KNeighborsClassifier
+
+knn_classifier = KNeighborsClassifier(n_neighbors=3)
+knn_classifier.fit(X_train, y_train)
+
+predictions = knn_classifier.predict(X_test)
+accuracy_knn = accuracy_score(y_test, predictions)
+print('')
+print('')
+print('KNN Performance High BP')
+print('')
+print('')
+print("Accuracy:", accuracy_knn)
+precision_knn = precision_score(y_test, predictions)
+print("Precision:", precision_knn)
+recall_knn = recall_score(y_test, predictions)
+print("Recall:", recall_knn)
+f1_knn = f1_score(y_test, predictions)
+print("F1 Score:", f1_knn)
+conf_matrix = confusion_matrix(y_test, predictions)
+plt.figure()
+heatmap=sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues', cbar=False,annot_kws={"weight": "bold","size": 14},
+            xticklabels=class_labels, yticklabels=class_labels)
+heatmap.set_xticklabels(heatmap.get_xticklabels(), weight='bold',fontsize=12)
+heatmap.set_yticklabels(heatmap.get_yticklabels(), weight='bold',fontsize=12)
+plt.title('High BP - KNN- Raw Dataset',fontweight='bold',fontsize=12)
+plt.xlabel('Predicted Labels',fontweight='bold',fontsize=12)
+plt.ylabel('True Labels',fontweight='bold',fontsize=12)
+plt.show()
+
+from sklearn.ensemble import RandomForestClassifier
+rf_classifier = RandomForestClassifier(n_estimators=100, random_state=42)
+rf_classifier.fit(X_train, y_train)
+predictions = rf_classifier.predict(X_test)
+accuracy_rf = accuracy_score(y_test, predictions)
+print('')
+print('')
+print('RF Performance High BP')
+print('')
+print('')
+print("Accuracy:", accuracy_rf)
+precision_rf = precision_score(y_test, predictions)
+print("Precision:", precision_rf)
+recall_rf = recall_score(y_test, predictions)
+print("Recall:", recall_rf)
+f1_rf = f1_score(y_test, predictions)
+print("F1 Score:", f1_rf)
+conf_matrix = confusion_matrix(y_test, predictions)
+plt.figure()
+heatmap=sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues', cbar=False,annot_kws={"weight": "bold","size": 14},
+            xticklabels=class_labels, yticklabels=class_labels)
+heatmap.set_xticklabels(heatmap.get_xticklabels(), weight='bold',fontsize=12)
+heatmap.set_yticklabels(heatmap.get_yticklabels(), weight='bold',fontsize=12)
+plt.title('High BP - RF- Raw Dataset',fontweight='bold',fontsize=12)
+plt.xlabel('Predicted Labels',fontweight='bold',fontsize=12)
+plt.ylabel('True Labels',fontweight='bold',fontsize=12)
+plt.show()
+
+svm_res=[accuracy_svm,precision_svm,recall_svm,f1_svm]
+knn_res=[accuracy_knn,precision_knn,recall_knn,f1_knn]
+rf_res=[accuracy_rf,precision_rf,recall_rf,f1_rf]
+
+x = np.arange(len(['Accuracy' , 'Precision', 'Recall','F1 Score']))
+fig, ax = plt.subplots(figsize=(10, 6))
+
+bar_width = 0.2
+plt.bar(x - 1.5 * bar_width, svm_res, bar_width, label='SVM')
+plt.bar(x - 0.5 * bar_width, knn_res, bar_width, label='KNN')
+plt.bar(x + 0.5 * bar_width, rf_res, bar_width, label='RF')
+
+# Set the labels and title
+plt.xlabel('Methods',fontweight='bold',fontsize=12)
+plt.ylabel('Scores',fontweight='bold',fontsize=12)
+plt.title('High BP - Raw Dataset',fontweight='bold',fontsize=12)
+plt.xticks(x, ['Accuracy' , 'Precision', 'Recall','F1 Score'],fontweight='bold',fontsize=12)
+plt.legend()
+# Show the plot
+plt.show()
+
+# ###############      Class : DEATH_EVENT
+
+## Seperating label from data
+DEATH_EVENT_index = data_input.columns.get_loc('DEATH_EVENT')
+
+data_in_array = list(data_input.values)
+import numpy as np
+data_in_array=np.array(data_in_array)
+result_array_data = np.delete(data_in_array, DEATH_EVENT_index, axis=1)
+
+X= result_array_data
+y=data_in_array[:,DEATH_EVENT_index]
+
+class_labels = ["Death : No", "Death: Yes"]
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+svm_classifier = SVC(kernel='linear')
+svm_classifier.fit(X_train, y_train)
+predictions = svm_classifier.predict(X_test)
+accuracy_svm = accuracy_score(y_test, predictions)
+print('')
+print('')
+print('SVM Performance Death')
+print('')
+print('')
+print("Accuracy:", accuracy_svm)
+precision_svm = precision_score(y_test, predictions)
+print("Precision:", precision_svm)
+recall_svm = recall_score(y_test, predictions)
+print("Recall:", recall_svm)
+f1_svm= f1_score(y_test, predictions)
+print("F1 Score:", f1_svm)
+conf_matrix = confusion_matrix(y_test, predictions)
+plt.figure()
+heatmap=sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues', cbar=False,annot_kws={"weight": "bold","size": 14},
+            xticklabels=class_labels, yticklabels=class_labels)
+heatmap.set_xticklabels(heatmap.get_xticklabels(), weight='bold',fontsize=12)
+heatmap.set_yticklabels(heatmap.get_yticklabels(), weight='bold',fontsize=12)
+plt.title('Death - SVM- Raw Dataset',fontweight='bold',fontsize=12)
+plt.xlabel('Predicted Labels',fontweight='bold',fontsize=12)
+plt.ylabel('True Labels',fontweight='bold',fontsize=12)
+plt.show()
+
+
+from sklearn.neighbors import KNeighborsClassifier
+
+knn_classifier = KNeighborsClassifier(n_neighbors=3)
+knn_classifier.fit(X_train, y_train)
+
+predictions = knn_classifier.predict(X_test)
+accuracy_knn = accuracy_score(y_test, predictions)
+print('')
+print('')
+print('KNN Performance Death')
+print('')
+print('')
+print("Accuracy:", accuracy_knn)
+precision_knn = precision_score(y_test, predictions)
+print("Precision:", precision_knn)
+recall_knn = recall_score(y_test, predictions)
+print("Recall:", recall_knn)
+f1_knn = f1_score(y_test, predictions)
+print("F1 Score:", f1_knn)
+conf_matrix = confusion_matrix(y_test, predictions)
+plt.figure()
+heatmap=sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues', cbar=False,annot_kws={"weight": "bold","size": 14},
+            xticklabels=class_labels, yticklabels=class_labels)
+heatmap.set_xticklabels(heatmap.get_xticklabels(), weight='bold',fontsize=12)
+heatmap.set_yticklabels(heatmap.get_yticklabels(), weight='bold',fontsize=12)
+plt.title('Death - KNN- Raw Dataset',fontweight='bold',fontsize=12)
+plt.xlabel('Predicted Labels',fontweight='bold',fontsize=12)
+plt.ylabel('True Labels',fontweight='bold',fontsize=12)
+plt.show()
+
+from sklearn.ensemble import RandomForestClassifier
+rf_classifier = RandomForestClassifier(n_estimators=100, random_state=42)
+rf_classifier.fit(X_train, y_train)
+predictions = rf_classifier.predict(X_test)
+accuracy_rf = accuracy_score(y_test, predictions)
+print('')
+print('')
+print('RF Performance Death')
+print('')
+print('')
+print("Accuracy:", accuracy_rf)
+precision_rf = precision_score(y_test, predictions)
+print("Precision:", precision_rf)
+recall_rf = recall_score(y_test, predictions)
+print("Recall:", recall_rf)
+f1_rf = f1_score(y_test, predictions)
+print("F1 Score:", f1_rf)
+conf_matrix = confusion_matrix(y_test, predictions)
+plt.figure()
+heatmap=sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues', cbar=False,annot_kws={"weight": "bold","size": 14},
+            xticklabels=class_labels, yticklabels=class_labels)
+heatmap.set_xticklabels(heatmap.get_xticklabels(), weight='bold',fontsize=12)
+heatmap.set_yticklabels(heatmap.get_yticklabels(), weight='bold',fontsize=12)
+plt.title('Death - RF- Raw Dataset',fontweight='bold',fontsize=12)
+plt.xlabel('Predicted Labels',fontweight='bold',fontsize=12)
+plt.ylabel('True Labels',fontweight='bold',fontsize=12)
+plt.show()
+svm_res=[accuracy_svm,precision_svm,recall_svm,f1_svm]
+knn_res=[accuracy_knn,precision_knn,recall_knn,f1_knn]
+rf_res=[accuracy_rf,precision_rf,recall_rf,f1_rf]
+
+x = np.arange(len(['Accuracy' , 'Precision', 'Recall','F1 Score']))
+fig, ax = plt.subplots(figsize=(10, 6))
+
+bar_width = 0.2
+plt.bar(x - 1.5 * bar_width, svm_res, bar_width, label='SVM')
+plt.bar(x - 0.5 * bar_width, knn_res, bar_width, label='KNN')
+plt.bar(x + 0.5 * bar_width, rf_res, bar_width, label='RF')
+
+# Set the labels and title
+plt.xlabel('Methods',fontweight='bold',fontsize=12)
+plt.ylabel('Scores',fontweight='bold',fontsize=12)
+plt.title('Death - Raw Dataset',fontweight='bold',fontsize=12)
+plt.xticks(x, ['Accuracy' , 'Precision', 'Recall','F1 Score'],fontweight='bold',fontsize=12)
+plt.legend()
+# Show the plot
+plt.show()
